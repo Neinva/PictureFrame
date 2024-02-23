@@ -15,7 +15,6 @@ import static com.motartin.application.Constants.PropertyKey.IMAGE_TYPES;
  * Predicate used to filter all files based on file ending.
  * Takes all accepts all file endings as configured in the property image.types or jpg and jpeg as default.
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ImageTypePredicate implements Predicate<String> {
 
@@ -34,7 +33,6 @@ public class ImageTypePredicate implements Predicate<String> {
 				.filter(ending -> !ending.isBlank())
 				.map(String::trim)
 				.toList();
-		log.debug("filtering for {}", fileEndings);
 		return fileEndings.stream().anyMatch(fileName.toLowerCase()::endsWith);
 	}
 }

@@ -27,13 +27,20 @@ public class Transformers {
 	static class ToJpegTransformer implements ImageTransformer {
 		@Override
 		public File convertToFittingFormat(File sourceFile, File targetFile) {
-			final ProcessBuilder transformerProgram = new ProcessBuilder("magick", " " + sourceFile.getAbsolutePath() + " " + targetFile.getAbsolutePath());
-			log.debug("Now running " + transformerProgram.command());
-			transformerProgram.directory(new File(PictureFrame.getAppLocationPath()));
+
+			final ProcessBuilder rawTherapeeCLI = new ProcessBuilder(
+				"rawtherapee-cli",
+				"-Y",//overwrite output if present
+				"-o",//output file
+				targetFile.getAbsolutePath(),
+				"-c",//input file - has to be the last parameter
+				sourceFile.getAbsolutePath());
+
+			log.debug("Now running " + rawTherapeeCLI.command());
 			try {
-				final Process process = transformerProgram.start();
+				final Process process = rawTherapeeCLI.start();
 				int exitCode = process.waitFor();
-				log.debug("done with transformation, got exitCode " + exitCode);
+				log.debug("Done with transformation, got exitCode " + exitCode);
 			} catch (IOException | InterruptedException e) {
 				log.debug("Could not transform ", e);
 			}

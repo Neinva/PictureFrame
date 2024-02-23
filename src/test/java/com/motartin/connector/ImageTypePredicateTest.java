@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static com.motartin.application.Constants.PropertyKey.IMAGE_TYPES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,7 +23,7 @@ class ImageTypePredicateTest {
 
 	@Test
 	void configuredFileEndingsWork_forPermissionCheck() {
-		System.setProperty("image.types", "jpeg,orf");
+		System.setProperty(IMAGE_TYPES, "jpeg,orf");
 		assertFalse(ImageTypePredicate.fileEndingPermitted("test.jpg"));
 		assertTrue(ImageTypePredicate.fileEndingPermitted("test.jpeg"));
 		assertTrue(ImageTypePredicate.fileEndingPermitted("test.orf"));
@@ -31,20 +32,16 @@ class ImageTypePredicateTest {
 
 	@Test
 	void predicateFiltersForDefaultEndings() {
-		System.clearProperty("image.types");
+		System.clearProperty(IMAGE_TYPES);
 		List<String> result = Stream.of("test.jpg", "test.jpeg", "test.invalid", "test.orf")
 				.filter(ImageTypePredicate.INSTANCE).toList();
-
-		if (result.size() == 1) {
-			log.debug(System.getProperty("image.types"));
-		}
 		assertEquals(2, result.size());
 		assertFalse(result.contains("test.orf"));
 	}
 
 	@Test
 	void predicateFiltersForConfiguredEndings() {
-		System.setProperty("image.types", "jpg,jpeg,orf");
+		System.setProperty(IMAGE_TYPES, "jpg,jpeg,orf");
 		List<String> result = Stream.of("test.jpg", "test.jpeg", "test.invalid", "test.orf")
 				.filter(ImageTypePredicate.INSTANCE).toList();
 
@@ -54,7 +51,7 @@ class ImageTypePredicateTest {
 
 	@Test
 	void whenConfiguredEndingsContainWhitespace_thenItWorks() {
-		System.setProperty("image.types", "jpg , jpeg , orf");
+		System.setProperty(IMAGE_TYPES, "jpg , jpeg , orf");
 		List<String> result = Stream.of("test.jpg", "test.jpeg", "test.invalid", "test.orf")
 				.filter(ImageTypePredicate.INSTANCE).toList();
 
@@ -64,7 +61,7 @@ class ImageTypePredicateTest {
 
 	@Test
 	void whenEndingIsBlank_thenItWillBeIgnored() {
-		System.setProperty("image.types", "jpg,,jpeg");
+		System.setProperty(IMAGE_TYPES, "jpg,,jpeg");
 		List<String> result = Stream.of("test.jpg", "test.jpeg", "test.invalid", "test.orf")
 				.filter(ImageTypePredicate.INSTANCE).toList();
 

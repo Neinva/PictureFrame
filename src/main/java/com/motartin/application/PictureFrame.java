@@ -27,9 +27,10 @@ import java.util.TimerTask;
 import java.util.concurrent.CompletableFuture;
 
 import static com.motartin.application.Constants.App.APPLICATION_NAME;
-import static com.motartin.application.Constants.App.IMAGE_REFRESH_TIMEOUT_ARG;
 import static com.motartin.application.Constants.App.IMAGE_REFRESH_TIMEOUT_DEFAULT_IN_SECONDS;
 import static com.motartin.application.Constants.App.STANDARD_PROPERTY_FILE_NAME;
+import static com.motartin.application.Constants.PropertyKey.CONNECTOR_TYPE;
+import static com.motartin.application.Constants.PropertyKey.IMAGE_REFRESH_TIMEOUT;
 import static com.motartin.utils.ImageScaler.scaleToFittingImage;
 import static com.motartin.utils.PropertyReader.readConfig;
 
@@ -39,11 +40,16 @@ import static com.motartin.utils.PropertyReader.readConfig;
 @Slf4j
 public class PictureFrame extends JFrame {
 
+	public static final String ICON_PNG = "icon.png";
 	private static final String PLACEHOLDER_PNG = "placeholder.png";
 	
 	private JLabel imageLabel;
 	private PictureProvider picProvider;
 	private final BufferedImage placeholder = ImageIO.read(PictureFrame.class.getResourceAsStream("/" + PLACEHOLDER_PNG));
+
+	public static void main(String[] args) throws IOException {
+		new PictureFrame();
+	}
 
 	public PictureFrame() throws IOException {
 		super(APPLICATION_NAME);
@@ -52,7 +58,7 @@ public class PictureFrame extends JFrame {
 
 		createFrame();
 
-		final String connectorType = System.getProperty("connector.type");
+		final String connectorType = System.getProperty(CONNECTOR_TYPE);
 
 		CompletableFuture.runAsync(() -> {
 			this.picProvider = new RandomPicProvider(getConnectorForType(connectorType));
@@ -60,7 +66,7 @@ public class PictureFrame extends JFrame {
 		});
 
 		int refreshRate = Integer.parseInt(
-				System.getProperty(IMAGE_REFRESH_TIMEOUT_ARG, IMAGE_REFRESH_TIMEOUT_DEFAULT_IN_SECONDS));
+				System.getProperty(IMAGE_REFRESH_TIMEOUT, IMAGE_REFRESH_TIMEOUT_DEFAULT_IN_SECONDS));
 		log.debug("Starting timer with refresh rate of " + refreshRate + " seconds");
 		Timer imageRefreshTimer = new Timer();
 		imageRefreshTimer.scheduleAtFixedRate(new TimerTask() {
@@ -74,8 +80,8 @@ public class PictureFrame extends JFrame {
 
 	private static void initProperties() {
 		final Properties properties = readConfig(STANDARD_PROPERTY_FILE_NAME);
-		if (!properties.containsKey("connector.type") || properties.getProperty("connector.type").isBlank()) {
-			properties.setProperty("connector.type", "default");
+		if (!properties.containsKey(CONNECTOR_TYPE) || properties.getProperty(CONNECTOR_TYPE).isBlank()) {
+			properties.setProperty(CONNECTOR_TYPE, "default");
 		}
 
 		System.getProperties().putAll(properties);
@@ -87,10 +93,6 @@ public class PictureFrame extends JFrame {
 			default -> new DefaultConnector();
 		};
 	}
-	
-	public static void main(String[] args) throws IOException {
-		new PictureFrame();
-	}
 
 	private void placeNextImage() {
 		if (picProvider == null) {
@@ -98,18 +100,11 @@ public class PictureFrame extends JFrame {
 			return;
 		}
 		Image nextFromProvider = picProvider.getNextImage();
-		BufferedImage nextPicture = nextFromProvider == null ? null : toBufferedImage(nextFromProvider);
-		if (nextPicture == null) {
-			log.debug("PictureProvider returned null. Maybe misconfigured?");
-			nextPicture = placeholder;
-		}
+		BufferedImage nextPicture = nextFromProvider == null ? placeholder : toBufferedImage(nextFromProvider);
 		imageLabel.setIcon(new ImageIcon(scaleToFittingImage(getWidth(), getHeight(), nextPicture)));
-		redraw();
 	}
 
-
-
-	private void createFrame() {
+	private void createFrame() throws IOException {
 		setExtendedState(Frame.MAXIMIZED_BOTH);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setUndecorated(true);
@@ -122,6 +117,7 @@ public class PictureFrame extends JFrame {
 				}
 			}
 		});
+		setIconImage(ImageIO.read(PictureFrame.class.getResourceAsStream("/" + ICON_PNG)));
 
 		imageLabel = new JLabel("", SwingConstants.CENTER);
 		placeNextImage();

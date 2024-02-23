@@ -3,7 +3,7 @@ package com.motartin.transformer;
 import java.io.File;
 
 /**
- * Deal with improper formats
+ * When images configured and found, which cannot be displayed as-is, they can be converted to a fitting format.
  */
 public interface ImageTransformer {
 	public File convertToFittingFormat(File sourceFile, File targetFile);

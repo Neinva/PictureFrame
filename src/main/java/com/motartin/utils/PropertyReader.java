@@ -1,7 +1,5 @@
 package com.motartin.utils;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileInputStream;
@@ -13,14 +11,15 @@ import static com.motartin.application.Constants.App.FALLBACK_PROPERTY_FILE_NAME
 import static com.motartin.application.PictureFrame.getAppLocationPath;
 
 @Slf4j
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PropertyReader {
 
 	/**
 	 * Reads properties from a file.
-	 * Checks first the project root for a file with the given name and second the resource folder for the default.
+	 * Checks: 	first the project root for a file with the given name,
+	 * 			second the resource folder for a file with the given name
+	 * 			third the resource folder for the default file.
 	 * @param configFileName name of the properties file
-	 * @return Properties contained in the file with the given name
+	 * @return Properties contained in the file with the given name or empty properties if no file with specified name was found.
 	 */
 	public static Properties readConfig(String configFileName) {
 		Properties theProperties = new Properties();
@@ -42,5 +41,9 @@ public class PropertyReader {
 		}
 
 		return theProperties;
+	}
+
+	private PropertyReader() {
+		throw new AssertionError(getClass().getSimpleName() + " cannot be instantiated.");
 	}
 }

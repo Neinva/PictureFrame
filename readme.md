@@ -13,3 +13,7 @@ and be terminated by hitting either
 Configuration is done by placing a properties file named ```pictureframeconfig.properties``` in the same folder as the .jar file.
 
 ## Developers
+
+## Attribution
+The icon used for the app comes from  
+<a href="https://www.flaticon.com/free-icons/frame" title="frame icons">Frame icons created by Smashicons - Flaticon</a>

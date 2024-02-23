@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static com.motartin.application.Constants.PropertyKey.IMAGE_TYPES;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mockStatic;
@@ -68,9 +69,9 @@ class DefaultConnectorTest {
 
 	@Test
 	void listFiles_respectsConfigParametersForFileType() {
-		System.setProperty("image.types", "png,orf");
+		System.setProperty(IMAGE_TYPES, "png,orf");
 		final DefaultConnector defaultConnector = new DefaultConnector();
 		assertEquals(2, defaultConnector.listFiles().size());
-		System.clearProperty("image.types");
+		System.clearProperty(IMAGE_TYPES);
 	}
 }

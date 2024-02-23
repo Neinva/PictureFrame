@@ -1,7 +1,7 @@
 package com.motartin.filehandling;
 
-import com.motartin.connector.Connector;
 import com.motartin.application.PictureFrame;
+import com.motartin.connector.Connector;
 import com.motartin.transformer.Transformers;
 import com.motartin.utils.FileHelper;
 import jcifs.smb.SmbFileInputStream;
@@ -14,10 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -61,6 +58,10 @@ public class RandomPicProvider implements PictureProvider {
 	private void retrieveNextImage() {
 		String nextImageName = getRandomPictureName();
 
+		if (nextImageName == null) {
+			return;
+		}
+
 		futureIcon = CompletableFuture.supplyAsync(() -> connector.getFile(nextImageName), executor)
 			.thenApply(inputStream -> {
 				if (inputStream instanceof SmbFileInputStream) {
@@ -78,7 +79,7 @@ public class RandomPicProvider implements PictureProvider {
 			.thenApply(localStream -> {
 				try {
 					if (Transformers.fileNeedsTransformation(nextImageName)) {
-						return getTransformedFile(localStream);
+						return getTransformedImage(nextImageName);
 					}
 					return ImageIO.read(localStream);
 				} catch (IOException e) {
@@ -88,27 +89,22 @@ public class RandomPicProvider implements PictureProvider {
 			});
 	}
 
-	private static FileInputStream transferToLocalFile(InputStream fileStream, String fileName) throws IOException {
-		Path tempFilePath = Path.of(PictureFrame.getAppLocationPath(), fileName);
-		Files.copy(
-				fileStream,
-				tempFilePath,
-				StandardCopyOption.REPLACE_EXISTING);
-		return new FileInputStream(tempFilePath.toFile());
-	}
-
 	private String getRandomPictureName() {
 		List<String> files = connector.listFiles();
+		if (files.isEmpty()) {
+			return null;
+		}
 		int position = new SecureRandom().nextInt(files.size());
 		return files.get(position);
 	}
 
-	private static BufferedImage getTransformedFile(InputStream fileStream) throws IOException {
-		transferToLocalFile(fileStream, "source.jpg");
-		File sourceFile = new File(PictureFrame.getAppLocationPath() + "/source.jpg");
-		File targetFile = new File(PictureFrame.getAppLocationPath() + "/result.jpg");
-		Transformers.getForConfiguration().convertToFittingFormat(sourceFile, targetFile);
-		Files.delete(sourceFile.getAbsoluteFile().toPath());
+	private static BufferedImage getTransformedImage(String nextImageName) throws IOException {
+		File sourceFile = new File(PictureFrame.getAppLocationPath() + "/" + nextImageName);
+		File targetFile = new File(PictureFrame.getAppLocationPath() + "/transformed.jpg");
+		final CompletableFuture<Void> transformation = CompletableFuture.runAsync(() -> {
+			Transformers.getForConfiguration().convertToFittingFormat(sourceFile, targetFile);
+		});
+		transformation.join();
 		return ImageIO.read(targetFile);
 	}
 }

@@ -26,6 +26,6 @@ public class FileHelper {
 	}
 
 	private FileHelper() {
-		throw new AssertionError("Cannot instantiate " + getClass().getName());
+		throw new AssertionError(getClass().getSimpleName() + " cannot be instantiated.");
 	}
 }
