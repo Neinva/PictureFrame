@@ -5,7 +5,7 @@ The PictureFrame is a configurable Java Application that displays different imag
 
 ## Usage
 The application can be started with the command  
-```java -jar hereTheNameOfTheExecutable.jar```  
+```java -jar pictureFrame.jar```  
 and be terminated by hitting either 
 <kbd>Enter</kbd> or <kbd>Esc</kbd> on the keyboard. 
 

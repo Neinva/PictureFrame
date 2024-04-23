@@ -14,16 +14,21 @@
 		<jcifs-ng.version>2.1.10</jcifs-ng.version>
 		<junit.version>5.9.1</junit.version>
 		<lombok.version>1.18.30</lombok.version>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
+		<imgscalr-lib.version>4.2</imgscalr-lib.version>
+		<junit.version>5.9.1</junit.version>
+		<license-maven-plugin.version>2.4.0</license-maven-plugin.version>
+		<logback.version>1.5.6</logback.version>
+		<lombok.version>1.18.30</lombok.version>
 		<maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
+		<maven-dependency-plugin.version>3.6.1</maven-dependency-plugin.version>
 		<maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 		<mockito.version>5.5.0</mockito.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j.version>2.0.11</slf4j.version>
-		<imgscalr-lib.version>4.2</imgscalr-lib.version>
-		<logback.version>1.4.12</logback.version>
-		<license-maven-plugin.version>2.2.0</license-maven-plugin.version>
+		<jcifs-ng.version>2.1.10</jcifs-ng.version>
 	</properties>
 
 	<dependencies>
@@ -53,6 +58,11 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>${logback.version}</version>
 		</dependency>
@@ -78,6 +88,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>pictureFrame</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -90,6 +101,7 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
+							<finalName>pictureFrame</finalName>
 							<archive>
 								<manifest>
 									<mainClass>
@@ -100,6 +112,7 @@
 							<descriptorRefs>
 								<descriptorRef>jar-with-dependencies</descriptorRef>
 							</descriptorRefs>
+							<finalName>${project.name}</finalName>
 						</configuration>
 					</execution>
 				</executions>
@@ -109,9 +122,6 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
-					<additionalClasspathElements>
-						<additionalClasspathElement>${project.basedir}/rootconfig.properties</additionalClasspathElement>
-					</additionalClasspathElements>
 					<reuseForks>false</reuseForks>
 					<forkCount>1</forkCount>
 				</configuration>
@@ -119,10 +129,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.6.1</version>
-				<configuration>
-					<ignoredUnusedDeclaredDependencies>ch.qos.logback:logback-classic</ignoredUnusedDeclaredDependencies>
-				</configuration>
+				<version>${maven-dependency-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>analyze</id>
@@ -131,7 +138,25 @@
 						</goals>
 						<configuration>
 							<failOnWarning>true</failOnWarning>
+							<ignoredUnusedDeclaredDependencies>
+								<ignoredUnusedDeclaredDependency>ch.qos.logback:logback-core</ignoredUnusedDeclaredDependency>
+								<ignoredUnusedDeclaredDependency>ch.qos.logback:logback-classic</ignoredUnusedDeclaredDependency>
+							</ignoredUnusedDeclaredDependencies>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>${license-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>download-licenses</id>
+						<goals>
+							<goal>download-licenses</goal>
+							<goal>add-third-party</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>

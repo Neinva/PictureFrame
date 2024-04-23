@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Connector that makes a connection to an SMB share specified in the properties.
+ * Connector that connects to an SMB share specified in the properties file.
  */
 @Slf4j
 public final class SMBConnector implements Connector {
@@ -29,7 +29,6 @@ public final class SMBConnector implements Connector {
 	private final String url;
 	@Getter(AccessLevel.PACKAGE)
 	private CIFSContext context;
-
 	public SMBConnector() {
 		url = System.getProperty("smb.url", "defaultURL") + "/";
 
