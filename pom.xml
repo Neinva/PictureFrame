@@ -122,9 +122,6 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>${maven-surefire-plugin.version}</version>
 				<configuration>
-					<additionalClasspathElements>
-						<additionalClasspathElement>${project.basedir}/rootconfig.properties</additionalClasspathElement>
-					</additionalClasspathElements>
 					<reuseForks>false</reuseForks>
 					<forkCount>1</forkCount>
 				</configuration>
@@ -133,7 +130,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>${maven-dependency-plugin.version}</version>
-
 				<executions>
 					<execution>
 						<id>analyze</id>
@@ -159,6 +155,7 @@
 						<id>download-licenses</id>
 						<goals>
 							<goal>download-licenses</goal>
+							<goal>add-third-party</goal>
 						</goals>
 					</execution>
 				</executions>
