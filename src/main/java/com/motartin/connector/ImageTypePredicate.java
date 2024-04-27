@@ -2,7 +2,6 @@ package com.motartin.connector;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,7 +12,7 @@ import static com.motartin.application.Constants.PropertyKey.IMAGE_TYPES;
 
 /**
  * Predicate used to filter all files based on file ending.
- * Takes all accepts all file endings as configured in the property image.types or jpg and jpeg as default.
+ * Accepts all file endings as configured in the property image.types or jpg and jpeg as default.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ImageTypePredicate implements Predicate<String> {

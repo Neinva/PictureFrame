@@ -21,6 +21,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,7 +46,7 @@ public class PictureFrame extends JFrame {
 	
 	private JLabel imageLabel;
 	private PictureProvider picProvider;
-	private final BufferedImage placeholder = ImageIO.read(PictureFrame.class.getResourceAsStream("/" + PLACEHOLDER_PNG));
+	private final BufferedImage placeholder = ImageIO.read(Objects.requireNonNull(PictureFrame.class.getResourceAsStream("/" + PLACEHOLDER_PNG)));
 
 	public static void main(String[] args) throws IOException {
 		new PictureFrame();
@@ -62,12 +63,12 @@ public class PictureFrame extends JFrame {
 
 		CompletableFuture.runAsync(() -> {
 			this.picProvider = new RandomPicProvider(getConnectorForType(connectorType));
-			log.debug("Got PictureProvider " + picProvider.getClass());
+			log.debug("Got PictureProvider {}", picProvider.getClass());
 		});
 
 		int refreshRate = Integer.parseInt(
 				System.getProperty(IMAGE_REFRESH_TIMEOUT, IMAGE_REFRESH_TIMEOUT_DEFAULT_IN_SECONDS));
-		log.debug("Starting timer with refresh rate of " + refreshRate + " seconds");
+		log.debug("Starting timer with refresh rate of {} seconds", refreshRate);
 		Timer imageRefreshTimer = new Timer();
 		imageRefreshTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
@@ -117,7 +118,7 @@ public class PictureFrame extends JFrame {
 				}
 			}
 		});
-		setIconImage(ImageIO.read(PictureFrame.class.getResourceAsStream("/" + ICON_PNG)));
+		setIconImage(ImageIO.read(Objects.requireNonNull(PictureFrame.class.getResourceAsStream("/" + ICON_PNG))));
 
 		imageLabel = new JLabel("", SwingConstants.CENTER);
 		placeNextImage();

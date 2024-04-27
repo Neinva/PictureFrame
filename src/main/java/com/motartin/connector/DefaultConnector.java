@@ -25,10 +25,10 @@ public class DefaultConnector implements Connector {
 	@Override
 	public InputStream getFile(String fileName) {
 		try {
-			log.debug("Getting file " + fileName);
+			log.debug("Getting file {}", fileName);
 			return Files.newInputStream(Paths.get(PictureFrame.getAppLocationPath(), fileName));
 		} catch (IOException e) {
-			log.error("Could not read " + fileName, e);
+			log.error("Could not read {}", fileName, e);
 			throw new RuntimeException(e);
 		}
 	}

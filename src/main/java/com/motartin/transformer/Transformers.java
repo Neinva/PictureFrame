@@ -1,6 +1,5 @@
 package com.motartin.transformer;
 
-import com.motartin.application.PictureFrame;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -26,7 +25,7 @@ public class Transformers {
 
 	static class ToJpegTransformer implements ImageTransformer {
 		@Override
-		public File convertToFittingFormat(File sourceFile, File targetFile) {
+		public void convertToFittingFormat(File sourceFile, File targetFile) {
 
 			final ProcessBuilder rawTherapeeCLI = new ProcessBuilder(
 				"rawtherapee-cli",
@@ -36,15 +35,14 @@ public class Transformers {
 				"-c",//input file - has to be the last parameter
 				sourceFile.getAbsolutePath());
 
-			log.debug("Now running " + rawTherapeeCLI.command());
+			log.debug("Now running {}", rawTherapeeCLI.command());
 			try {
 				final Process process = rawTherapeeCLI.start();
 				int exitCode = process.waitFor();
-				log.debug("Done with transformation, got exitCode " + exitCode);
+				log.debug("Done with transformation, got exitCode {}", exitCode);
 			} catch (IOException | InterruptedException e) {
 				log.debug("Could not transform ", e);
 			}
-			return targetFile;
 		}
 	}
 }

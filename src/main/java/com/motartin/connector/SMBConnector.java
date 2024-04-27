@@ -20,32 +20,42 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import static com.motartin.application.Constants.PropertyKey.*;
+
 /**
  * Connector that connects to an SMB share specified in the properties file.
  */
 @Slf4j
 public final class SMBConnector implements Connector {
+
 	@Getter(AccessLevel.PACKAGE)
 	private final String url;
 	@Getter(AccessLevel.PACKAGE)
 	private CIFSContext context;
-	public SMBConnector() {
-		url = System.getProperty("smb.url", "defaultURL") + "/";
 
+	public SMBConnector() {
+		url = System.getProperty(SMB_URL, "defaultURL") + "/";
+
+		try {
+			BaseContext baseCxt = new BaseContext(getConfiguration());
+			context = baseCxt.withCredentials(getNtlmPasswordAuthenticator());
+		} catch (CIFSException e) {
+			log.debug("Could not init SMB connector.", e);
+		}
+	}
+
+	private static NtlmPasswordAuthenticator getNtlmPasswordAuthenticator() {
+		return new NtlmPasswordAuthenticator(
+				System.getProperty(SMB_DOMAIN, "defaultDomain"),
+				System.getProperty(SMB_USER, "defaultUserName"),
+				System.getProperty(SMB_PASSWORD, "defaultPassword"));
+	}
+
+	private static Configuration getConfiguration() throws CIFSException {
 		Properties jcifsProperties  = new Properties();
 		jcifsProperties.setProperty("jcifs.smb.client.enableSMB2", "true");
 		jcifsProperties.setProperty("jcifs.smb.client.dfs.disabled","true");
-		Configuration config;
-		try {
-			config = new PropertyConfiguration(jcifsProperties);
-			BaseContext baseCxt = new BaseContext(config);
-			context = baseCxt.withCredentials(new NtlmPasswordAuthenticator(
-					System.getProperty("smb.domain", "defaultDomain"),
-					System.getProperty("smb.user", "defaultUserName"),
-					System.getProperty("smb.password", "defaultPassword")));
-		} catch (CIFSException e) {
-			log.debug("Problems reading properties. Could not init SMB connector. ", e);
-		}
+		return new PropertyConfiguration(jcifsProperties);
 	}
 
 	@Override

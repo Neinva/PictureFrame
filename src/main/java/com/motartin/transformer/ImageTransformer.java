@@ -6,5 +6,5 @@ import java.io.File;
  * When images configured and found, which cannot be displayed as-is, they can be converted to a fitting format.
  */
 public interface ImageTransformer {
-	public File convertToFittingFormat(File sourceFile, File targetFile);
+	public void convertToFittingFormat(File sourceFile, File targetFile);
 }

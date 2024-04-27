@@ -16,7 +16,7 @@ public class FileHelper {
 	public static CompletableFuture<File> copyInputStreamToFile(@NonNull InputStream inputStream, @NonNull File file) {
 		return CompletableFuture.supplyAsync(() -> {
 			try (OutputStream output = new FileOutputStream(file)) {
-				log.debug("Copy input stream to " + file.getAbsolutePath());
+				log.debug("Copy input stream to {}", file.getAbsolutePath());
 				inputStream.transferTo(output);
 			} catch (IOException ioException) {
 				log.debug(ioException.getMessage());
